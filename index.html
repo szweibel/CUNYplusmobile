@@ -1,0 +1,423 @@
+
+<!DOCTYPE html> 
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<title>New Hunter Catalog</title> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+	<style type="text/css">
+	.ui-li .ui-btn-text a.ui-link-inherit {
+		text-overflow: visible;
+		overflow: visible;
+		white-space: normal;
+		}
+	table.details { width:100%; }
+    table.details caption { text-align:left;  }
+    table.details thead th { text-align:left; border-bottom-width:1px; border-top-width:1px; }
+    table.details th, td { text-align:left; padding:6px;} 
+    .ui-header .ui-btn-icon-left .ui-btn-inner, .ui-footer .ui-btn-icon-left .ui-btn-inner, .ui-mini.ui-btn-icon-left .ui-btn-inner, .ui-mini .ui-btn-icon-left .ui-btn-inner {
+padding-left: 23px;
+}
+</style>
+</head> 
+
+	
+<body> 
+<script type="text/javascript">
+var APILocation = 'http://localhost:3000'
+		jQuery(document).ready(function($) {
+			$( document ).on( "mobileinit", function() {
+		        //jQuery Mobile framework configuration changes here!
+		        
+		        // turn off animated transitions for Android
+		        if (navigator.userAgent.indexOf("Android") != -1)
+				    {
+				        $.mobile.defaultPageTransition = 'none';
+				        $.mobile.defaultDialogTransition = 'none';
+				        $("a").attr("data-transition", "none");
+				    }
+		        $.mobile.allowCrossDomainPages = true;
+		        $.mobile.ajaxEnabled = true;
+		        $.mobile.pushStateEnabled = false;
+		        $.mobile.allowCrossDomainPages = true; 
+		        $.support.cors = true; 
+		        $.mobile.buttonMarkup.hoverDelay = 0;
+		    });
+
+		//PAGE 1
+		var searching =	function(query){	$.mobile.showPageLoadingMsg();
+				$('#books').empty().hide();
+				$('#search_query').empty();
+				var searchQuery = query
+				var searchType = $('#search_type').val();
+				var jqxhr = $.getJSON(APILocation + "/search", {'query':searchQuery, 'queryType':searchType},function(data){	
+				})
+		    .success(function(data) {
+		    	$('#search_query').append('<h3>' + searchQuery + '</h3>');
+			    if (searchType == 'All Fields'){
+			    	for (var i = 1; i < data.length; i++) {
+					    var book = data[i];
+					    bookStr = '<li class="book_item" year="' + book.year + '" library="' + book.libraryCode + '" id="' + book.docNumber + '"><a href=#book_page><img src="' + book.thumbnail + '"/><h3>' + book.title + '</h3><p>'+ book.author + '</p></a></li>';
+					    $("#books").append( $(bookStr) ).show('drop');
+					}
+				}
+				else if (searchType == 'SCAN_SHL'){
+					for (var i = 1; i < data.length; i++) {
+					    var book = data[i];
+					    bookStr = '<li class="book_item" id="'+ book.docNumber +'"><a href=#book_page><h3>' + book.name + '</h3><p>' + book.callNumber + '</p></a></li>';
+					    $("#books").append( $(bookStr) ).show('drop');
+					}	
+				}
+				else {
+					for (var i = 1; i < data.length; i++) {
+					    var book = data[i];
+					    if (book.accessCode == undefined){
+					    	bookStr = '<li class="choice ui-disabled" title="' + book.name + '"" id="'+ book.accessCode +'"><a href=#><h3>' + book.name + '</h3></a></li>';	
+					    }
+					    else{
+					    	bookStr = '<li class="choice" title="' + book.name + '"" id="'+ book.accessCode +'"><a href=#><h3>' + book.name + '</h3></a></li>';
+					    }
+					    $("#books").append( $(bookStr) ).show('drop');
+					}
+				}
+		    })
+			.error(function() { alert("error"); })
+		  	.complete(
+		  		function() {
+		  		$("#books").listview("refresh");
+				$.mobile.hidePageLoadingMsg();
+				});
+		  	};
+
+		$('input[type=text]').keyup(function(e) {
+  			if(e.keyCode == 13) {
+				searching($('#q').val())     		}
+		});
+
+		$("#search").on("click", function() {
+			searching($('#q').val())
+		});
+		
+		$("body").on("click", ".choice", function(e){
+			var accessCode = this.id
+			var entry = this.title
+			$('#books').empty().hide();
+			$('#search_query').empty();
+			var jqxhr = $.getJSON("http://localhost:3000/search",{'accessCode': accessCode},function(data) {
+			})
+			.success(function(data) { 
+				$('#search_query').append('<h3>' + entry + '</h3>');
+				console.log(data[1])
+			    	for (var i = 1; i < data.length; i++) {
+					    var item = data[i];
+					    console.log(item.year)
+					    if (item.docNumber == undefined){
+					    	bookStr = '<li class="book_item ui-disabled" year="' + item.year + '" library="' + item.libraryCode + '" id="' + item.docNumber + '"><a href=#book_page><img src="' + item.thumbnail + '"/><h3>' + item.title + '</h3><p>'+ item.author + '</p><p>'+ item.year + '</p></a></li>';	
+					    }
+					    else{
+					    	bookStr = '<li class="book_item" year="' + item.year + '" library="' + item.libraryCode + '" id="' + item.docNumber + '"><a href=#book_page><img src="' + item.thumbnail + '"/><h3>' + item.title + '</h3><p>'+ item.author + '</p><p>'+ item.year + '</p></a></li>';	
+					    };
+					    $("#books").append( $(bookStr) ).show('drop');
+					};
+			})
+			.error(function(data) {  })
+			.complete(function(data) { 
+		  		$("#books").listview("refresh");
+				$.mobile.hidePageLoadingMsg(); 
+			});
+		});
+		
+		//Details Page
+		$("body").on("click", ".book_item", function(e){
+			// $.mobile.showPageLoadingMsg();
+			$('#details').empty();
+			$('#full_citation').empty();
+
+			var library = $(this).attr('library')
+			if (library== undefined){
+				library = 'none'
+			}
+			var bookHtml = $(this).html();
+			var image = $(bookHtml).find('img').attr('src');
+			if (image== undefined){
+				image = 'none'
+			}
+			var title = $(bookHtml).find('h3').text();
+			var year = $(this).attr('year') || '';
+			var author = $(bookHtml).find('p').text();
+			var id=this.id;
+
+			var bookData = $.getJSON(APILocation + "/details",{'docNumber':id, 'library':library},function(data){	
+			})
+			.success(function(data) {
+				$('<li style="min-height:127px;"><img style="min-height:150px;" src="' + image + '"><h3>' + title + '</h3><p>' + author + '</p><p>' + year + '</p></li>').appendTo('#full_citation');
+				$("#full_citation").listview("refresh");
+		    	for (var i = 1; i < data.length; i++) {
+				    var item = data[i];
+				    for (var property in item) {
+				        console.log('item ' + i + ': ' + property + '=' + item[property]);
+				    	}
+				    $('#details').append('<div><h2> Copy ' + i + '</h2></div>')
+				    fullTable = '<table class="details" id="'+ i + '"><thead></thead><tfoot><tr></tr></tfoot><tbody></tbody></table>'
+				    $('#details').append(fullTable);
+				    callStr = '<tr><th scope="row">Call #</th><td style="text-align: right;">' + item.callNumber + '</td></tr>';
+				    libStr = '<tr><th scope="row">Library</th><td style="text-align: right;">' + item.library + '</td></tr>';
+				    locStr = '<tr><th scope="row">Location</th><td style="text-align: right;">' + item.location + '</td></tr>';
+				    statStr = '<tr><th scope="row">Status</th><td style="text-align: right;">' + item.status + '</td></tr>';
+				    
+		  			$('#' + i).append( $(callStr) ).append( $(libStr) ).append( $(locStr) ).append( $(statStr) );
+		  			if (item.description !='' & item.description !='<br />'){
+				    	// console.log(item.description);
+				    	descStr = '<tr><th scope="row">Description</th><td style="text-align: right;">' + item.description + '</td></tr>';
+					    $('#' + i).append( $(descStr) )
+				    	}
+				    if (item.dueDate !='' & item.dueDate !='<br />') {
+				    	// console.log(item.dueDate);
+					    dueStr = '<tr><th scope="row" >Due Date</th><td style="text-align: right;">' + item.dueDate + '</td></tr>';
+					    hourStr = '<tr><th scope="row" >Due Hour</th><td style="text-align: right;">' + item.dueHour + '</td></tr>';
+					    $('#' + i).append( $(dueStr) ).append( $(hourStr) )
+				    	}
+					};
+
+	        })
+			.error(function() { alert("error"); })
+		  	.complete(
+		  		function() { 
+				$.mobile.hidePageLoadingMsg();
+				});
+		});
+		$('#book_page').on('pageshow',function(event){
+	    	// $.mobile.showPageLoadingMsg();
+		});
+
+		//Hours Page
+		$('#hours').on('pageshow',function(event, ui){
+			$.mobile.showPageLoadingMsg();
+			var jqxhr = $.get("http://localhost:3000/hours", function(data) {
+			    // alert(data);
+			  })
+			  .success(function(data) { 
+			  	if ($('#hours_table').is(':empty')){
+					$('#hours_table').append(data); }
+				})
+			  .error(function(data) {  })
+			  .complete(function(data) { $.mobile.hidePageLoadingMsg(); });
+		});
+
+		//News Page
+		$('#news').on('pageshow',function(event, ui){
+			$.mobile.showPageLoadingMsg();
+			var jqxhr = $.getJSON(APILocation + "/feed", function(data) {
+			    // alert(data);
+			  })
+			  .success(function(data) { 
+			  	if ($('#news_placement').is(':empty')){
+					for (var i = 0; i < data.length; i++) {
+					    var article = data[i];
+					    console.log(article.title)
+					    $('#news_placement').append('<h3> <a href="'+ article.link + '">' + article.title + '</a></h3>');
+					    $('#news_placement').append('<p>' + article.description + '</p>');
+					    $('#news_placement').append('<p></p>');
+					}
+			  		$('#news_placement').append(data); }
+				})
+			  .error(function(data) { alert('error'); })
+			  .complete(function(data) { $.mobile.hidePageLoadingMsg(); });
+			
+		});			
+	});
+</script>
+
+<div data-role="page" id="one" data-add-back-btn="true">
+	
+	<div data-role="header">
+      <h1>Hunter College Library</h1>
+      <img border="0" src="http://i.imgur.com/gEunn.jpg" alt="Logo" width="100%"/>
+	</div>
+
+	<div data-role="content" >	
+	<div class='content-primary'> 
+		<p><a href="#catalog" data-role="button" data-transition="pop">Library Catalog</a></p>
+		<p><a href="#news" data-role="button" data-transition="pop">News</a></p>	
+		<p><a href="#hours" data-role="button" data-transition="pop">Hours</a></p>	
+		<p><a href="#maps" data-role="button" data-transition="pop">Maps</a></p>	
+	</div>	
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-id="foo1" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#catalog" data-transition="pop">Catalog</a></li>
+				<li><a href="#news" data-transition="pop">News</a></li>
+				<li><a href="#hours" data-transition="pop">Hours</a></li>
+				<li><a href="#maps" data-transition="pop">Map</a></li>
+			</ul>
+		</div><!-- /navbar -->
+</div><!-- /footer -->
+</div><!-- /page one -->
+
+<!-- Start of first page: #one -->
+<div data-role="page" id="catalog" data-add-back-btn="true">
+
+	<div data-role="header">
+		<h1>Hunter Library</h1>
+	</div><!-- /header -->
+
+	<div data-role="content" >	
+		<h2>Catalog</h2>
+	
+		<input type="search" id='q'>
+		<select id='search_type'>
+			<option value='All Fields'>All Fields</option>
+			<option value='SCAN_TTl'>Title</option>
+			<option value='SCAN_AUT'>Author (Last Name First)</option>
+			<option value='SCAN_SHL'>Call Number</option>
+			<option value='SCAN_SUL'>Subject</option>
+		</select>
+		<a href='#' id='search' data-role="button">Search</a>
+		<div id='search_query'></div>
+	<div>
+	<ul id='books' data-role='listview' style="display: none;"> 
+		<!-- <ul id='books' data-role='listview'></ul> -->
+	</ul>
+	</div>
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-id="foo1" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#catalog" data-transition="pop" class="ui-btn-active ui-state-persist">Catalog</a></li>
+				<li><a href="#news" data-transition="pop">News</a></li>
+				<li><a href="#hours" data-transition="pop">Hours</a></li>
+				<li><a href="#maps" data-transition="pop">Map</a></li>
+			</ul>
+		</div><!-- /navbar -->
+</div><!-- /footer -->
+</div><!-- /catalog -->
+
+
+
+<!-- Start of second page: #book_page -->
+<div data-role="page" id="book_page" data-add-back-btn="true">
+
+	<div data-role="header">
+		<h1>Hunter Library</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<p id='image'></p>
+		<ul id='full_citation' data-role='listview'></ul>
+		<ul id='items'></ul>
+		<div id='details'></div>
+
+		<!-- <table  id='details' summary="This table lists all the copies."> 
+		  <caption>Item Versions</caption> 
+		  <thead> 
+		  </thead> 
+		  <tfoot> 
+		    <tr> 
+		      <td colspan="5">Total: 3 flights</td> 
+		    </tr> 
+		  </tfoot> 
+		  <tbody> 
+		  </tbody> 
+		</table>  -->
+		<p><a href="#catalog" data-direction="reverse" data-role="button" data-theme="b">Back</a></p>	
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-id="foo2" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#catalog" data-transition="pop" class="ui-btn-active ui-state-persist">Catalog</a></li>
+				<li><a data-transition="pop" href="#news">News</a></li>
+				<li><a data-transition="pop" href="#hours">Hours</a></li>
+				<li><a data-transition="pop" href="#map">Map</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div><!-- /page two -->
+
+
+
+<!-- Start of page: #news -->
+<div data-role="page" id="news">
+
+	<div data-role="header">
+		<h1>Hunter Library</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<h2>News</h2>
+		<div id='news_placement'></div>
+		
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-id="foo2" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a data-transition="pop" href="#catalog">Catalog</a></li>
+				<li><a data-transition="pop" href="#news" class="ui-btn-active ui-state-persist">News</a></li>
+				<li><a data-transition="pop" href="#hours">Hours</a></li>
+				<li><a data-transition="pop" href="#maps">Map</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div><!-- /page two -->
+
+
+<!-- Start of third page: #hours -->
+<div data-role="page" id="hours">
+
+	<div data-role="header">
+		<h1>Hours</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">
+		<div id='hours_table'></div>
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-id="foo2" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a data-transition="pop" href="#catalog">Catalog</a></li>
+				<li><a data-transition="pop" href="#news">News</a></li>
+				<li><a data-transition="pop" href="#hours" class="ui-btn-active ui-state-persist">Hours</a></li>
+				<li><a data-transition="pop" href="#maps">Map</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div><!-- /page news -->
+
+
+
+<!-- Start of third page: #maps -->
+<div data-role="page" id="maps">
+
+	<div data-role="header">
+		<h1>Maps</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">
+		<h2>Popup</h2>
+		<p>I have an id of "popup" on my page container and only look like a dialog because the link to me had a <code>data-rel="dialog"</code> attribute which gives me this inset look and a <code>data-transition="pop"</code> attribute to change the transition to pop. Without this, I'd be styled as a normal page.</p>		
+		<p><a href="#one" data-rel="back" data-role="button" data-inline="true" data-icon="back">Back to page "one"</a></p>	
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-id="foo2" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a data-transition="pop" href="#catalog">Catalog</a></li>
+				<li><a data-transition="pop" href="#news">News</a></li>
+				<li><a data-transition="pop" href="#hours">Hours</a></li>
+				<li><a data-transition="pop" href="#maps" class="ui-btn-active ui-state-persist">Map</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div><!-- /page news -->
+
+</body>
+</html>
