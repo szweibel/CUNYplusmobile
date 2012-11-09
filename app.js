@@ -10,16 +10,6 @@ var express = require('express')
 
 var app = express();
 
-app.get('/test', function (req, res) {
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query;
-    var testing = req.query["id"];
-    console.log(query);
-
-});
-
-
-
 app.get('/search', function (req, res) {
     var searchQuery = req.query["query"];
     var searchType = req.query["queryType"];
@@ -217,19 +207,26 @@ app.get('/details', function (req, res) {
                     }
 
                     if (allRecords[i].location == 'WEB Resource'){
-                        var newTable = $('table')[4];
-                        console.log($(newTable).html());
-                        console.log('!!!!!!!');
+                        var newTable = $('table')[3];
+                        var rows = $(newTable).children('tr');
+                        rows.each(function (j,item){
+                            var test = $(item).children('td')[1];
+                            if ($(test).html().indexOf("Hunter") != -1 || $(test).html().indexOf("access limited to CUNY") != -1){
+                                var href = $(test).find('a').attr('href');
+                                var start = 'javascript.open_window('.length;
+                                var linky = href.substring(start, href.length - 2)
+                                var composed = '<a href='+ linky +'>Access online</a>'
+                                allRecords[i].location = composed
+                            }
+                        });
                     };
 
                 });
-
-                // console.log(allRecords);
                 res.writeHead(200, {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
                 });
-
+                // console.log(allRecords);
                 res.end(JSON.stringify(allRecords));
         });
     });
@@ -249,7 +246,7 @@ app.get('/feed', function (req, res) {
             // console.log('%s - %s - %s', meta.title, meta.link, meta.xmlurl);
             // console.log('Articles');
             articles.forEach(function (article){
-              console.log('%s - %s (%s)', article.date, article.title, article.link);
+              // console.log('%s - %s (%s)', article.date, article.title, article.link);
               // res.send(JSON.stringify(article.title))
             });
             res.writeHead(200, {
@@ -257,8 +254,7 @@ app.get('/feed', function (req, res) {
                     'Access-Control-Allow-Origin' : '*'
                 });
             res.end(JSON.stringify(articles))
-          });
-    // res.end(JSON.stringify(allNews));
+        });
 });
 
 app.get('/hours', function (req, res) {
@@ -282,21 +278,17 @@ app.get('/hours', function (req, res) {
                 // load jquery
                 var $ = window.jQuery;
 
-                var resultsTable = $('table')[0];
+                var hoursTable = $('table')[0];
 
                 res.writeHead(200, {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
                 });
 
-                res.end($(resultsTable).html());
+                res.end($(hoursTable).html());
         });
     });
 });
-
-
-
-
 
 app.listen(3000, 'localhost');
 
