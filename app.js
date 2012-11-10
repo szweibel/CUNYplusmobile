@@ -10,6 +10,10 @@ var express = require('express')
 
 var app = express();
 
+app.get('/', function (req, res){
+    res.end('Hi!'); 
+});
+
 app.get('/search', function (req, res) {
     var searchQuery = req.query["query"];
     var searchType = req.query["queryType"];
@@ -242,13 +246,6 @@ app.get('/feed', function (req, res) {
             allNews.push(paper)
         })
         .on('complete', function callback (meta, articles){
-            // console.log('Feed info');
-            // console.log('%s - %s - %s', meta.title, meta.link, meta.xmlurl);
-            // console.log('Articles');
-            articles.forEach(function (article){
-              // console.log('%s - %s (%s)', article.date, article.title, article.link);
-              // res.send(JSON.stringify(article.title))
-            });
             res.writeHead(200, {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
@@ -290,6 +287,6 @@ app.get('/hours', function (req, res) {
     });
 });
 
-app.listen(3000, 'localhost');
+app.listen(6000, 'localhost');
 
-console.log('Server running at http://127.0.0.1:3000/');
+console.log('Server running at http://127.0.0.1:6000/');
