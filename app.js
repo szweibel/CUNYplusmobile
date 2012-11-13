@@ -217,14 +217,18 @@ app.get('/details', function (req, res) {
                             var test = $(item).children('td')[1];
                             if ($(test).html().indexOf("Hunter") != -1 || $(test).html().indexOf("access limited to CUNY") != -1){
                                 var href = $(test).find('a').attr('href');
+                                if (href === undefined) {
+                                    var nextRow = $(newTable).children('tr')[1];
+                                    var nextTd = $(nextRow).children('td')[1];
+                                    href = $(nextTd).find('a').attr('href');
+                                }
                                 var start = 'javascript.open_window('.length;
                                 var linky = href.substring(start, href.length - 2)
                                 var composed = '<a href='+ linky +'>Access online</a>'
                                 allRecords[i].location = composed
-                            }
-                        });
+                            };
+                        }); 
                     };
-
                 });
                 res.writeHead(200, {
                     'Content-Type': 'text/plain',
@@ -287,6 +291,6 @@ app.get('/hours', function (req, res) {
     });
 });
 
-app.listen(6000, 'localhost');
+app.listen(5001, 'localhost');
 
-console.log('Server running at http://127.0.0.1:6000/');
+console.log('Server running at http://127.0.0.1:5001/');
