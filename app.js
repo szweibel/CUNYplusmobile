@@ -291,6 +291,7 @@ app.get('/hours', function (req, res) {
     });
 });
 
-app.listen(3002, '0.0.0.0');
+var port = process.env.PORT || 3002
+app.listen(port, '0.0.0.0');
 
-console.log('Server running at http://127.0.0.1:3002/');
+console.log('Server running at http://127.0.0.1:' + (port || '3002'));
