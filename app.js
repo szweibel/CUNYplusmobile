@@ -42,7 +42,7 @@ app.get('/search', function (req, res) {
         else{
             func = '?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=HUNTER'
         };
-        if (pagination && alephCookie){
+        if (pagination > 1 && alephCookie){
             uriBase = uriBase + (alephCookie);
             var page = '000021';
             var func = '?func=short-jump&jump=' + page;
