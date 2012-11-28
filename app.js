@@ -10,6 +10,18 @@ var express = require('express')
 
 var app = express();
 
+function getParameterByName(name, url)
+{
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(url);
+  if(results == null)
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 app.get('/', function (req, res){
     res.end('Hi!');
 });
@@ -19,6 +31,7 @@ app.get('/search', function (req, res) {
     var searchType = req.query["queryType"];
     var accessCode = req.query["accessCode"];
     var pagination = req.query["page"];
+    var scanStart = req.query["scanStart"];
     var alephCookie = req.query["alephCookie"];
     var uriBase = 'http://p83-apps.appl.cuny.edu.proxy.wexler.hunter.cuny.edu/F/'
     console.log(req.searchQuery)
@@ -113,10 +126,10 @@ app.get('/search', function (req, res) {
         });
     }
         else{
-            var func = '?func=find-e&adjacent=N&find_scan_code='+ searchType +'&request=' + searchQuery + '&Search=+Search+&local_base=HUNTER';
-            if (pagination){
-                uriBase = uriBase + alephCookie;
-                func = '?func=scan&scan_start=025138317&scan_code=TTL&scan_op=NEXT';
+            if (scanStart){ //If we want the next page
+                var func = '?func=scan&scan_start='+ scanStart +'&scan_code=TTL&scan_op=CONT';
+            }else{
+                var func = '?func=find-e&adjacent=N&find_scan_code=SCAN_'+ searchType +'&request=' + searchQuery + '&Search=+Search+&local_base=HUNTER';
             }
             var options = {uri: uriBase + func};
 
@@ -134,6 +147,13 @@ app.get('/search', function (req, res) {
                 }, function (err, window) {
                     // load jquery
                     var $ = window.jQuery;
+
+                    var cookieTable = $('table')[2];
+                    var mine = $(cookieTable).find('a')[1];
+                    var theUrl = $(mine).attr('href');
+                    // Getting the number for the next page
+                    var nextScanStart = getParameterByName('scan_start', theUrl)
+
                     var resultsTable = $('table')[3];
                     var rows = $(resultsTable).children('tr');
                     allChoices = new Array();
@@ -152,14 +172,14 @@ app.get('/search', function (req, res) {
                                     allChoices[i].url = link;
                                 }
                         });
-                    console.log(allChoices);
+                    // console.log(allChoices);
 
                 res.writeHead(200, {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
                 });
                 finalJSON = {
-                    alephCookie: cookie,
+                    scanStart: nextScanStart,
                     allBooks: allChoices
                 }
                 res.end(JSON.stringify(finalJSON));
