@@ -158,7 +158,11 @@ app.get('/search', function (req, res) {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
                 });
-                res.end(JSON.stringify(allChoices));
+                finalJSON = {
+                    alephCookie: cookie,
+                    allBooks: allChoices
+                }
+                res.end(JSON.stringify(finalJSON));
             });
         });
     };
