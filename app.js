@@ -31,9 +31,10 @@ app.get('/search', function (req, res) {
     var searchType = req.query["queryType"];
     var accessCode = req.query["accessCode"];
     var pagination = req.query["page"];
-    var scanStart = req.query["scanStart"];
+    var scanStart = req.query["scanStart"]; //where the next page should start
     var alephCookie = req.query["alephCookie"];
-    var uriBase = 'http://p83-apps.appl.cuny.edu.proxy.wexler.hunter.cuny.edu/F/'
+    var uriBase = 'http://p83-apps.appl.cuny.edu.proxy.wexler.hunter.cuny.edu/F/';
+
     console.log(req.searchQuery)
     if (searchType == 'All Fields' || accessCode){
         if (accessCode){
@@ -117,6 +118,7 @@ app.get('/search', function (req, res) {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
                 });
+                allBooks.shift();
                 finalJSON = {
                     alephCookie: cookie,
                     allBooks: allBooks
@@ -178,6 +180,7 @@ app.get('/search', function (req, res) {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
                 });
+                allChoices.shift();
                 finalJSON = {
                     scanStart: nextScanStart,
                     allBooks: allChoices
