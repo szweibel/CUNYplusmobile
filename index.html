@@ -1,11 +1,11 @@
 
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1"> 
-	<title>New Hunter Catalog</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>New Hunter Catalog</title>
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
@@ -18,21 +18,19 @@
 	table.details { width:100%; }
     table.details caption { text-align:left;  }
     table.details thead th { text-align:left; border-bottom-width:1px; border-top-width:1px; }
-    table.details th, td { text-align:left; padding:6px;} 
-    .ui-header .ui-btn-icon-left .ui-btn-inner, .ui-footer .ui-btn-icon-left .ui-btn-inner, .ui-mini.ui-btn-icon-left .ui-btn-inner, .ui-mini .ui-btn-icon-left .ui-btn-inner {
-padding-left: 23px;
-}
+    table.details th, td { text-align:left; padding:6px;}
+    .ui-header .ui-btn-icon-left .ui-btn-inner, .ui-footer .ui-btn-icon-left .ui-btn-inner, .ui-mini.ui-btn-icon-left .ui-btn-inner, .ui-mini .ui-btn-icon-left .ui-btn-inner {padding-left: 23px;}
 </style>
-</head> 
+</head>
 
-	
-<body> 
+
+<body>
 <script type="text/javascript">
-var APILocation = 'http://localhost:3000'
+var APILocation = 'http://localhost:3002'
 		jQuery(document).ready(function($) {
 			$( document ).on( "mobileinit", function() {
 		        //jQuery Mobile framework configuration changes here!
-		        
+
 		        // turn off animated transitions for Android
 		        if (navigator.userAgent.indexOf("Android") != -1)
 				    {
@@ -43,8 +41,8 @@ var APILocation = 'http://localhost:3000'
 		        $.mobile.allowCrossDomainPages = true;
 		        $.mobile.ajaxEnabled = true;
 		        $.mobile.pushStateEnabled = false;
-		        $.mobile.allowCrossDomainPages = true; 
-		        $.support.cors = true; 
+		        $.mobile.allowCrossDomainPages = true;
+		        $.support.cors = true;
 		        $.mobile.buttonMarkup.hoverDelay = 0;
 		    });
 
@@ -54,7 +52,7 @@ var APILocation = 'http://localhost:3000'
 				$('#search_query').empty();
 				var searchQuery = query
 				var searchType = $('#search_type').val();
-				var jqxhr = $.getJSON(APILocation + "/search", {'query':searchQuery, 'queryType':searchType},function(data){	
+				var jqxhr = $.getJSON(APILocation + "/search", {'query':searchQuery, 'queryType':searchType},function(data){
 				})
 		    .success(function(data) {
 		    	$('#search_query').append('<h3>' + searchQuery + '</h3>');
@@ -70,13 +68,13 @@ var APILocation = 'http://localhost:3000'
 					    var book = data[i];
 					    bookStr = '<li class="book_item" id="'+ book.docNumber +'"><a href=#book_page><h3>' + book.name + '</h3><p>' + book.callNumber + '</p></a></li>';
 					    $("#books").append( $(bookStr) ).show('drop');
-					}	
+					}
 				}
 				else {
 					for (var i = 1; i < data.length; i++) {
 					    var book = data[i];
 					    if (book.accessCode == undefined){
-					    	bookStr = '<li class="choice ui-disabled" title="' + book.name + '"" id="'+ book.accessCode +'"><a href=#><h3>' + book.name + '</h3></a></li>';	
+					    	bookStr = '<li class="choice ui-disabled" title="' + book.name + '"" id="'+ book.accessCode +'"><a href=#><h3>' + book.name + '</h3></a></li>';
 					    }
 					    else{
 					    	bookStr = '<li class="choice" title="' + book.name + '"" id="'+ book.accessCode +'"><a href=#><h3>' + book.name + '</h3></a></li>';
@@ -101,7 +99,7 @@ var APILocation = 'http://localhost:3000'
 		$("#search").on("click", function() {
 			searching($('#q').val())
 		});
-		
+
 		$("body").on("click", ".choice", function(e){
 			var accessCode = this.id
 			var entry = this.title
@@ -109,28 +107,28 @@ var APILocation = 'http://localhost:3000'
 			$('#search_query').empty();
 			var jqxhr = $.getJSON("http://localhost:3000/search",{'accessCode': accessCode},function(data) {
 			})
-			.success(function(data) { 
+			.success(function(data) {
 				$('#search_query').append('<h3>' + entry + '</h3>');
 				console.log(data[1])
 			    	for (var i = 1; i < data.length; i++) {
 					    var item = data[i];
 					    console.log(item.year)
 					    if (item.docNumber == undefined){
-					    	bookStr = '<li class="book_item ui-disabled" year="' + item.year + '" library="' + item.libraryCode + '" id="' + item.docNumber + '"><a href=#book_page><img src="' + item.thumbnail + '"/><h3>' + item.title + '</h3><p>'+ item.author + '</p><p>'+ item.year + '</p></a></li>';	
+					    	bookStr = '<li class="book_item ui-disabled" year="' + item.year + '" library="' + item.libraryCode + '" id="' + item.docNumber + '"><a href=#book_page><img src="' + item.thumbnail + '"/><h3>' + item.title + '</h3><p>'+ item.author + '</p><p>'+ item.year + '</p></a></li>';
 					    }
 					    else{
-					    	bookStr = '<li class="book_item" year="' + item.year + '" library="' + item.libraryCode + '" id="' + item.docNumber + '"><a href=#book_page><img src="' + item.thumbnail + '"/><h3>' + item.title + '</h3><p>'+ item.author + '</p><p>'+ item.year + '</p></a></li>';	
+					    	bookStr = '<li class="book_item" year="' + item.year + '" library="' + item.libraryCode + '" id="' + item.docNumber + '"><a href=#book_page><img src="' + item.thumbnail + '"/><h3>' + item.title + '</h3><p>'+ item.author + '</p><p>'+ item.year + '</p></a></li>';
 					    };
 					    $("#books").append( $(bookStr) ).show('drop');
 					};
 			})
 			.error(function(data) {  })
-			.complete(function(data) { 
+			.complete(function(data) {
 		  		$("#books").listview("refresh");
-				$.mobile.hidePageLoadingMsg(); 
+				$.mobile.hidePageLoadingMsg();
 			});
 		});
-		
+
 		//Details Page
 		$("body").on("click", ".book_item", function(e){
 			// $.mobile.showPageLoadingMsg();
@@ -151,7 +149,7 @@ var APILocation = 'http://localhost:3000'
 			var author = $(bookHtml).find('p').text();
 			var id=this.id;
 
-			var bookData = $.getJSON(APILocation + "/details",{'docNumber':id, 'library':library},function(data){	
+			var bookData = $.getJSON(APILocation + "/details",{'docNumber':id, 'library':library},function(data){
 			})
 			.success(function(data) {
 				$('<li style="min-height:127px;"><img style="min-height:150px;" src="' + image + '"><h3>' + title + '</h3><p>' + author + '</p><p>' + year + '</p></li>').appendTo('#full_citation');
@@ -168,7 +166,7 @@ var APILocation = 'http://localhost:3000'
 				    libStr = '<tr><th scope="row">Library</th><td style="text-align: right;">' + item.library + '</td></tr>';
 				    locStr = '<tr><th scope="row">Location</th><td style="text-align: right;">' + item.location + '</td></tr>';
 				    statStr = '<tr><th scope="row">Status</th><td style="text-align: right;">' + item.status + '</td></tr>';
-				    
+
 		  			$('#' + i).append( $(callStr) ).append( $(libStr) ).append( $(locStr) ).append( $(statStr) );
 		  			if (item.description !='' & item.description !='<br />'){
 				    	// console.log(item.description);
@@ -186,7 +184,7 @@ var APILocation = 'http://localhost:3000'
 	        })
 			.error(function() { alert("error"); })
 		  	.complete(
-		  		function() { 
+		  		function() {
 				$.mobile.hidePageLoadingMsg();
 				});
 		});
@@ -200,7 +198,7 @@ var APILocation = 'http://localhost:3000'
 			var jqxhr = $.get("http://localhost:3000/hours", function(data) {
 			    // alert(data);
 			  })
-			  .success(function(data) { 
+			  .success(function(data) {
 			  	if ($('#hours_table').is(':empty')){
 					$('#hours_table').append(data); }
 				})
@@ -214,7 +212,7 @@ var APILocation = 'http://localhost:3000'
 			var jqxhr = $.getJSON(APILocation + "/feed", function(data) {
 			    // alert(data);
 			  })
-			  .success(function(data) { 
+			  .success(function(data) {
 			  	if ($('#news_placement').is(':empty')){
 					for (var i = 0; i < data.length; i++) {
 					    var article = data[i];
@@ -227,27 +225,27 @@ var APILocation = 'http://localhost:3000'
 				})
 			  .error(function(data) { alert('error'); })
 			  .complete(function(data) { $.mobile.hidePageLoadingMsg(); });
-			
-		});			
+
+		});
 	});
 </script>
 
 <div data-role="page" id="one" data-add-back-btn="true">
-	
+
 	<div data-role="header">
       <h1>Hunter College Library</h1>
       <img border="0" src="http://i.imgur.com/gEunn.jpg" alt="Logo" width="100%"/>
 	</div>
 
-	<div data-role="content" >	
-	<div class='content-primary'> 
+	<div data-role="content" >
+	<div class='content-primary'>
 		<p><a href="#catalog" data-role="button" data-transition="pop">Library Catalog</a></p>
-		<p><a href="#news" data-role="button" data-transition="pop">News</a></p>	
-		<p><a href="#hours" data-role="button" data-transition="pop">Hours</a></p>	
-		<p><a href="#maps" data-role="button" data-transition="pop">Maps</a></p>	
-	</div>	
+		<p><a href="#news" data-role="button" data-transition="pop">News</a></p>
+		<p><a href="#hours" data-role="button" data-transition="pop">Hours</a></p>
+		<p><a href="#maps" data-role="button" data-transition="pop">Maps</a></p>
+	</div>
 	</div><!-- /content -->
-	
+
 	<div data-role="footer" data-id="foo1" data-position="fixed">
 		<div data-role="navbar">
 			<ul>
@@ -267,9 +265,9 @@ var APILocation = 'http://localhost:3000'
 		<h1>Hunter Library</h1>
 	</div><!-- /header -->
 
-	<div data-role="content" >	
+	<div data-role="content" >
 		<h2>Catalog</h2>
-	
+
 		<input type="search" id='q'>
 		<select id='search_type'>
 			<option value='All Fields'>All Fields</option>
@@ -281,12 +279,12 @@ var APILocation = 'http://localhost:3000'
 		<a href='#' id='search' data-role="button">Search</a>
 		<div id='search_query'></div>
 	<div>
-	<ul id='books' data-role='listview' style="display: none;"> 
+	<ul id='books' data-role='listview' style="display: none;">
 		<!-- <ul id='books' data-role='listview'></ul> -->
 	</ul>
 	</div>
 	</div><!-- /content -->
-	
+
 	<div data-role="footer" data-id="foo1" data-position="fixed">
 		<div data-role="navbar">
 			<ul>
@@ -308,27 +306,27 @@ var APILocation = 'http://localhost:3000'
 		<h1>Hunter Library</h1>
 	</div><!-- /header -->
 
-	<div data-role="content">	
+	<div data-role="content">
 		<p id='image'></p>
 		<ul id='full_citation' data-role='listview'></ul>
 		<ul id='items'></ul>
 		<div id='details'></div>
 
-		<!-- <table  id='details' summary="This table lists all the copies."> 
-		  <caption>Item Versions</caption> 
-		  <thead> 
-		  </thead> 
-		  <tfoot> 
-		    <tr> 
-		      <td colspan="5">Total: 3 flights</td> 
-		    </tr> 
-		  </tfoot> 
-		  <tbody> 
-		  </tbody> 
+		<!-- <table  id='details' summary="This table lists all the copies.">
+		  <caption>Item Versions</caption>
+		  <thead>
+		  </thead>
+		  <tfoot>
+		    <tr>
+		      <td colspan="5">Total: 3 flights</td>
+		    </tr>
+		  </tfoot>
+		  <tbody>
+		  </tbody>
 		</table>  -->
-		<p><a href="#catalog" data-direction="reverse" data-role="button" data-theme="b">Back</a></p>	
+		<p><a href="#catalog" data-direction="reverse" data-role="button" data-theme="b">Back</a></p>
 	</div><!-- /content -->
-	
+
 	<div data-role="footer" data-id="foo2" data-position="fixed">
 		<div data-role="navbar">
 			<ul>
@@ -350,12 +348,12 @@ var APILocation = 'http://localhost:3000'
 		<h1>Hunter Library</h1>
 	</div><!-- /header -->
 
-	<div data-role="content">	
+	<div data-role="content">
 		<h2>News</h2>
 		<div id='news_placement'></div>
-		
+
 	</div><!-- /content -->
-	
+
 	<div data-role="footer" data-id="foo2" data-position="fixed">
 		<div data-role="navbar">
 			<ul>
@@ -379,7 +377,7 @@ var APILocation = 'http://localhost:3000'
 	<div data-role="content">
 		<div id='hours_table'></div>
 	</div><!-- /content -->
-	
+
 	<div data-role="footer" data-id="foo2" data-position="fixed">
 		<div data-role="navbar">
 			<ul>
@@ -403,10 +401,10 @@ var APILocation = 'http://localhost:3000'
 
 	<div data-role="content">
 		<h2>Popup</h2>
-		<p>I have an id of "popup" on my page container and only look like a dialog because the link to me had a <code>data-rel="dialog"</code> attribute which gives me this inset look and a <code>data-transition="pop"</code> attribute to change the transition to pop. Without this, I'd be styled as a normal page.</p>		
-		<p><a href="#one" data-rel="back" data-role="button" data-inline="true" data-icon="back">Back to page "one"</a></p>	
+		<p>I have an id of "popup" on my page container and only look like a dialog because the link to me had a <code>data-rel="dialog"</code> attribute which gives me this inset look and a <code>data-transition="pop"</code> attribute to change the transition to pop. Without this, I'd be styled as a normal page.</p>
+		<p><a href="#one" data-rel="back" data-role="button" data-inline="true" data-icon="back">Back to page "one"</a></p>
 	</div><!-- /content -->
-	
+
 	<div data-role="footer" data-id="foo2" data-position="fixed">
 		<div data-role="navbar">
 			<ul>

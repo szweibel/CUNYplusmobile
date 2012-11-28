@@ -18,20 +18,23 @@ app.get('/search', function (req, res) {
     var searchQuery = req.query["query"];
     var searchType = req.query["queryType"];
     var accessCode = req.query["accessCode"];
-    // console.log(req.query)
-
+    var pagination = req.query["page"];
+    var alephCookie = req.query["alephCookie"];
+    var uriBase = 'http://p83-apps.appl.cuny.edu.proxy.wexler.hunter.cuny.edu/F/'
+    console.log(req.searchQuery)
     if (searchType == 'All Fields' || accessCode){
         if (accessCode){
-            var options = {
-                uri: 'http://p83-apps.appl.cuny.edu.proxy.wexler.hunter.cuny.edu/F/?func=find-acc&acc_sequence=' + accessCode + '&local_base=HUNTER',
-            }
+            func = '?func=find-acc&acc_sequence=' + accessCode + '&local_base=HUNTER'
         }
         else{
-        var options = {
-            uri: 'http://apps.appl.cuny.edu:83/F/?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=HUNTER',
-            };
+            func = '?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=HUNTER'
+        };
+        if (pagination && alephCookie){
+            uriBase = uriBase + (alephCookie);
+            var page = '000021';
+            var func = '?func=short-jump&jump=' + page;
         }
-
+        var options = {uri: uriBase + func};
         request(options, function(error, response, body) {
         //  debugger;
             console.log(options.uri)
@@ -46,6 +49,12 @@ app.get('/search', function (req, res) {
                 }, function (err, window) {
                 // load jquery
                 var $ = window.jQuery;
+
+                var cookieTable = $('table')[2];
+                var mine = $(cookieTable).find('td')[2];
+                var cookieSource = $($(mine).find('form')).attr('action') || '/ ';
+                var cookie = cookieSource.substr(cookieSource.lastIndexOf("/") + 1);
+
                 var resultsTable = $('table')[4];
                 var rows = $(resultsTable).children('tr');
 
@@ -89,20 +98,28 @@ app.get('/search', function (req, res) {
                             allBooks[i].url = link;
                         };
                 });
-
-                console.log(allBooks);
+                res.cookie('AlephSession', cookie, { maxAge: 900000, httpOnly: false});
+                // console.log(allBooks);
                 res.writeHead(200, {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
                 });
-                res.end(JSON.stringify(allBooks));
+                finalJSON = {
+                    alephCookie: cookie,
+                    allBooks: allBooks
+                }
+                res.end(JSON.stringify(finalJSON));
             });
         });
     }
         else{
-            var options = {
-                uri: 'http://p83-apps.appl.cuny.edu.proxy.wexler.hunter.cuny.edu/F/?func=find-e&adjacent=N&find_scan_code='+ searchType +'&request=' + searchQuery + '&Search=+Search+&local_base=HUNTER',
-                };
+            var func = '?func=find-e&adjacent=N&find_scan_code='+ searchType +'&request=' + searchQuery + '&Search=+Search+&local_base=HUNTER';
+            if (pagination){
+                uriBase = uriBase + alephCookie;
+                func = '?func=scan&scan_start=025138317&scan_code=TTL&scan_op=NEXT';
+            }
+            var options = {uri: uriBase + func};
+
             request(options, function(error, response, body) {
             //  debugger;
                 console.log(options.uri)
