@@ -276,6 +276,7 @@ app.get('/details', function (req, res) {
                     };
                 };
             });
+            allRecords.shift();
             res.writeHead(200, {
                 'Content-Type': 'text/plain',
                 'Access-Control-Allow-Origin' : '*'
