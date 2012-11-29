@@ -45,7 +45,7 @@ app.get('/search', function (req, res) {
         };
         if (pagination > 1 && alephCookie){
             uriBase = uriBase + (alephCookie);
-            var page = '000021';
+            var page = 1 + (20 * (pagination - 1 ));
             var func = '?func=short-jump&jump=' + page;
         }
         var options = {uri: uriBase + func};
