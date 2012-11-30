@@ -33,7 +33,7 @@ app.get('/search', function (req, res) {
     var pagination = req.query["page"];
     var scanStart = req.query["scanStart"]; //where the next page should start
     var alephCookie = req.query["alephCookie"];
-    var uriBase = 'http://p83-apps.appl.cuny.edu.proxy.wexler.hunter.cuny.edu/F/';
+    var uriBase = 'http://apps.appl.cuny.edu:83/F/';
 
     console.log(req.searchQuery)
     if (searchType == 'All Fields' || accessCode){
@@ -259,8 +259,8 @@ app.get('/details', function (req, res) {
                         var rows = $(newTable).children('tr');
                         rows.each(function (j,item){
                             var test = $(item).children('td')[1];
-                            if ($(test).html().indexOf("Hunter") != -1 || $(test).html().indexOf("access limited to CUNY") != -1
-                            || $(test).html().indexOf("for all CUNY Users") != -1 || $(test).html().indexOf("Free") != -1){
+                            if ($(test).html().indexOf("Hunter") != -1 || $(test).html().indexOf("CUNY") != -1
+                            || $(test).html().indexOf("for all") != -1 || $(test).html().indexOf("Free") != -1){
                                 var href = $(test).find('a').attr('href');
                                 if (href === undefined) {
                                     var nextRow = $(newTable).children('tr')[1];
