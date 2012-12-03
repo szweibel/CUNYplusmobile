@@ -84,6 +84,16 @@ app.get('/search', function (req, res) {
                     var author = $(item).children('td')[3];
 
                     var title = $(item).children('td')[4];
+                    var scripts = $(title).find('script').text();
+                    var findStart = scripts.search('=');
+                    var findEnd = scripts.search('>');
+                    var marcLinkBuild = scripts.substring(findStart, (findEnd));
+                    var marcLink = marcLinkBuild.slice(3);
+                    var lastPlace = marcLink.search('=');
+                    marcLink = marcLink.substring(lastPlace + 1);
+                    var setNumber = getParameterByName('set_number', marcLink)
+                    var setEntry = getParameterByName('set_entry', marcLink)
+                    console.log(setNumber + "!" + setEntry);
 
                     $($(title).children('script')).remove();
 
@@ -95,11 +105,13 @@ app.get('/search', function (req, res) {
                     var link = $(holdingLibrary).attr('href');
 
                     allBooks[i] = {
-                        title: $(title).text().trim(),
-                        author: $(author).text().trim(),
-                        year: $(year).text().trim(),
-                        resourceType: $(resourceType).text().trim(),
-                        library: $(holdingLibrary).text().trim(),
+                        "title": $(title).text().trim(),
+                        "author": $(author).text().trim(),
+                        "year": $(year).text().trim(),
+                        "resourceType": $(resourceType).text().trim(),
+                        "library": $(holdingLibrary).text().trim(),
+                        "setNumber": setNumber,
+                        "setEntry": setEntry
                         };
 
                         if (image !== undefined)
@@ -191,6 +203,60 @@ app.get('/search', function (req, res) {
     };
 })
 
+app.get('/marc', function (req, res){
+    var setNumber = req.query["setNumber"];
+    var setEntry = req.query["setEntry"];
+    var alephCookie = req.query["alephCookie"];
+    var uriBase = 'http://apps.appl.cuny.edu:83/F/';
+
+
+    var options = {
+        uri: uriBase + alephCookie +'?func=full-set-set&set_number='+ setNumber +'&set_entry='+ setEntry +'&format=002'
+    };
+    request(options, function(error, response, body) {
+    //  debugger;
+        console.log(options.uri)
+        if (error && response.statusCode !== 200) {
+            console.log(error);
+        }
+
+        jsdom.env({
+                html: body,
+                scripts: [
+                    'https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'
+                ]
+            }, function (err, window) {
+            // load jquery
+            var $ = window.jQuery;
+            $('img[src]').each(function(i,el){
+                $(el).removeAttr('src');
+            });
+
+            var wholeMarc = {};
+
+            var resultsTable = $('table')[4];
+            console.log($(resultsTable).html());
+
+            var rows = $(resultsTable).children('tr');
+            rows.each(function (i, item) {
+                var marcLabel = $(item).children('td')[0];
+                var marcValue = $(item).children('td')[1];
+                var name = $(marcLabel).text().trim();
+                var value = $(marcValue).text().trim();
+
+                wholeMarc[name] = value;
+            });
+            // allRecords.shift();
+            res.writeHead(200, {
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Origin' : '*'
+            });
+            console.log(wholeMarc);
+            res.end(JSON.stringify(wholeMarc));
+        });
+    });
+});
+
 app.get('/details', function (req, res) {
     var docNumber = req.query["docNumber"];
     var library = req.query["library"];
@@ -240,17 +306,18 @@ app.get('/details', function (req, res) {
                 var dueHour = $(item).children('td')[7];
                 var requestUrl = 'http://apps.appl.cuny.edu:83/F/?func=title-request-form&bib_doc_number=' + docNumber;
 
+
                 allRecords[i] = {
-                    citation: $(citation).html().trim(),
-                    library: $(expLibrary).html(),
-                    location: $(expLocation).html(),
-                    callNumber: $(callNumber).html(),
-                    description: $(description).html(),
-                    status: $(status).html(),
-                    dueDate: $(dueDate).html(),
-                    dueHour: $(dueHour).html(),
-                    requestUrl: requestUrl,
-                    docNumber: docNumber
+                    "citation": $(citation).html().trim(),
+                    "library": $(expLibrary).html(),
+                    "location": $(expLocation).html(),
+                    "callNumber": $(callNumber).html(),
+                    "description": $(description).html(),
+                    "status": $(status).html(),
+                    "dueDate": $(dueDate).html(),
+                    "dueHour": $(dueHour).html(),
+                    "requestUrl": requestUrl,
+                    "docNumber": docNumber
                 }
 
                 if (allRecords[i].location){
