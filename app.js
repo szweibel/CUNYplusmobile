@@ -34,14 +34,15 @@ app.get('/search', function (req, res) {
     var scanStart = req.query["scanStart"]; //where the next page should start
     var alephCookie = req.query["alephCookie"];
     var uriBase = 'http://apps.appl.cuny.edu:83/F/';
+    var whichLibrary = req.query["CUNYSchool"];
 
     console.log(req.searchQuery)
     if (searchType == 'All Fields' || accessCode){
         if (accessCode){
-            func = '?func=find-acc&acc_sequence=' + accessCode + '&local_base=HUNTER'
+            func = '?func=find-acc&acc_sequence=' + accessCode + '&local_base=' + (whichLibrary || 'Hunter');
         }
         else{
-            func = '?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=HUNTER'
+            func = '?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=' + (whichLibrary || 'Hunter');
         };
         if (pagination > 1 && alephCookie){
             uriBase = uriBase + (alephCookie);
@@ -143,7 +144,7 @@ app.get('/search', function (req, res) {
             if (scanStart){ //If we want the next page
                 var func = '?func=scan&scan_start='+ scanStart +'&scan_code=TTL&scan_op=CONT';
             }else{
-                var func = '?func=find-e&adjacent=N&find_scan_code=SCAN_'+ searchType +'&request=' + searchQuery + '&Search=+Search+&local_base=HUNTER';
+                var func = '?func=find-e&adjacent=N&find_scan_code=SCAN_'+ searchType +'&request=' + searchQuery + '&Search=+Search+&local_base=' + (whichLibrary || 'Hunter');
             }
             var options = {uri: uriBase + func};
 

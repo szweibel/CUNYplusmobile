@@ -33,7 +33,16 @@ function CatalogCtrl($scope, $http, $templateCache) {
     $scope.page = 1
     $scope.theCookie = ''
     $scope.nextScanPage = ''
-    $scope.listType = 'books'
+    $scope.listType = ''
+    $scope.marcRecord = 'data';
+    $scope.schools = [{'value':'BARUCH', 'label':'Baruch College'}, {'value':'BOROUGH', 'label':'BMCC'}, {'value':'BRONX', 'label':'Bronx CC'},
+        {'value':'BROOKLYN', 'label':'Brooklyn College'}, {'value':'CENTRO', 'label':'Centro at Hunter'},
+        {'value':'CITY', 'label':'City College and DSI'}, {'value':'STATENISLAND', 'label':'College of Staten Island'},
+        {'value':'GRADCENTER', 'label':'Graduate Center'}, {'value':'JOURNALISM', 'label':'Graduate School of Journalism'},
+        {'value':'HOSTOS', 'label':'Hostos CC'}, {'value':'HUNTER', 'label':'Hunter College'}, {'value':'JOHNJAY', 'label':'John Jay College'},
+        {'value':'KINGSBOROUGH', 'label':'Kingsborough CC'}, {'value':'LAGUARDIA', 'label':'LaGuardia CC'}, {'value':'LAW', 'label':'Law School'},
+        {'value':'LEHMAN', 'label':'Lehman College'}, {'value':'MEDGAR', 'label':'Medgar Evers College'}, {'value':'NYCITY', 'label':'NYCCT'},
+        {'value':'QUEENS', 'label':'Queens College'}, {'value':'QUEENSBOROUGH', 'label':'Queensborough CC'}, {'value':'YORK', 'label':'York College'}]
     $scope.choices = [{ "value": "All Fields", "label": "All fields" }, { "value": "TTL", "label": "Title" }, { "value": "AUT", "label": "Author" }
     , { "value": "SHL", "label": "Call Number" }, { "value": "SUL", "label": "Subject" }];
 
@@ -47,6 +56,17 @@ function CatalogCtrl($scope, $http, $templateCache) {
                     $scope.results = 'Nothing Found!'
                 }
                 else{ $scope.results = '' };
+            });
+        })
+        .error(function(data) { alert('error') });
+    };
+
+    $scope.marc = function(item) {
+        console.log('hey');
+        var jqxhr = $.getJSON(APILocation + "/marc", {'setNumber':item.setNumber, 'setEntry':item.setEntry,
+            alephCookie: $scope.theCookie},function(data) {
+        $scope.$apply(function(){
+                $scope.marcRecord = data;
             });
         })
         .error(function(data) { alert('error') });

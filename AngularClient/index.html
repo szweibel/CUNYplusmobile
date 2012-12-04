@@ -45,12 +45,14 @@
     <p>search: {{query}}</p>
     <p>{{results}}</p>
       <ul class='unstyled'>
-      	<li ng-click='goRecord(item)' ng-repeat='item in data'>
+      	<li ng-repeat='item in data'>
           <div ng-switch on='listType'>
         	<div ng-switch-when='All Fields'>
+            <div ng-click='goRecord(item)'>
             <table>
               <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name || item.title || item.callNumber}}</a><br/>{{item.author || item.callNumber}}<br/>{{item.year}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
             </table>
+            </div>
           <div ng-repeat='copy in details' ng-show="isOpen(item)">
               <p>Copy {{($index + 1)}}</p>
             <table class='table table-striped table-condensed'>
@@ -60,29 +62,37 @@
                 <tr><th>Status</th><td>{{copy.status}}</td></tr>
                 <tr><th>Description</th><td ng-bind-html-unsafe='copy.description'></td></tr>
                 <tr><th>Due Date</th><td ng-bind-html-unsafe='copy.dueDate'></td></tr>
-                <!-- <tr><th>Due Hour</th><td ng-bind-html-unsafe='copy.dueHour'></td></tr> -->
             </table>
           </div>
+            <!-- <p ng-click='marc(item)'>Details</p> -->
         </div>
          <div ng-switch-when='TTL'>
+          <div ng-click='goRecord(item)'>
           <table>
-              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>{{item.author || item.callNumber}}<br/>{{item.year}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>results: {{item.callNumber}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
           </table>
+          </div>
         </div>
         <div ng-switch-when='SUL'>
+          <div ng-click='goRecord(item)'>
           <table>
-              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>{{item.author || item.callNumber}}<br/>{{item.year}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>results:{{item.callNumber}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
           </table>
+          </div>
         </div>
         <div ng-switch-when='AUT'>
+          <div ng-click='goRecord(item)'>
           <table>
-              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>{{item.author || item.callNumber}}<br/>{{item.year}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>results:{{item.callNumber}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
           </table>
+          </div>
         </div>
         <div ng-switch-when='SHL'>
+          <div ng-click='goRecord(item)'>
           <table>
               <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.callNumber}}</a><br/>{{item.name}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
           </table>
+          </div>
             <div ng-repeat='copy in details' ng-show="isOpen(item)">
                 <p>Copy {{($index + 1)}}</p>
               <table class='table table-striped table-condensed'>
