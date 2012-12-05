@@ -30,10 +30,11 @@ function CatalogCtrl($scope, $http, $templateCache) {
     $scope.query = null;
     $scope.queryType = 'All Fields';
     $scope.results = '';
-    $scope.page = 1
-    $scope.theCookie = ''
-    $scope.nextScanPage = ''
-    $scope.listType = ''
+    $scope.page = 1;
+    $scope.theCookie = '';
+    $scope.nextScanPage = '';
+    $scope.listType = '';
+    $scope.dataOnPage = 0;
     $scope.marcRecord = 'data';
     $scope.schools = [{'value':'BARUCH', 'label':'Baruch College'}, {'value':'BOROUGH', 'label':'BMCC'}, {'value':'BRONX', 'label':'Bronx CC'},
         {'value':'BROOKLYN', 'label':'Brooklyn College'}, {'value':'CENTRO', 'label':'Centro at Hunter'},
@@ -46,12 +47,24 @@ function CatalogCtrl($scope, $http, $templateCache) {
     $scope.choices = [{ "value": "All Fields", "label": "All fields" }, { "value": "TTL", "label": "Title" }, { "value": "AUT", "label": "Author" }
     , { "value": "SHL", "label": "Call Number" }, { "value": "SUL", "label": "Subject" }];
 
-    $scope.fetch = function() {
+    $scope.fetch = function(whichEvent) {
+        if (whichEvent == 'new'){ $scope.page = 1; $scope.nextScanPage = ''; }else{ $scope.page = $scope.page + 1; };
+        console.log($scope.page);
         $scope.listType = $scope.queryType;
         var jqxhr = $.getJSON(APILocation + "/search", {'query':$scope.query, 'queryType':$scope.queryType, 'page': $scope.page,
-            alephCookie: $scope.theCookie, 'scanStart': $scope.nextScanPage},function(data) {
-        $scope.$apply(function(){
-                $scope.data = data.allBooks;
+            alephCookie: $scope.theCookie, 'scanStart': $scope.nextScanPage},function(data) {})
+        .success(function(data) {
+            $scope.$apply(function(){
+            $scope.theCookie = data.alephCookie;
+            $scope.nextScanPage = data.scanStart;
+                if ($scope.page == 1){
+                    $scope.data = data.allBooks;
+                }
+                else{
+                    // console.log(data.allBooks);
+                    $scope.data = $scope.data.concat(data.allBooks);
+                };
+                $scope.dataOnPage = data.allBooks.length;
                 if ($scope.data[0] == undefined){
                     $scope.results = 'Nothing Found!'
                 }
@@ -83,8 +96,8 @@ function CatalogCtrl($scope, $http, $templateCache) {
                         $scope.details = data;
                     });
                 })
-                .error(function(data) { alert('error') })
-                .complete(function(data) { $('.table').slideDown();});
+                .success(function(data) { $('.table').slideDown();})
+                .error(function(data) { alert('error') });
             }
             else if (item.accessCode){
                 $.getJSON(APILocation + "/search",{'accessCode': item.accessCode },function(data) {
@@ -92,8 +105,8 @@ function CatalogCtrl($scope, $http, $templateCache) {
                         $scope.data = data.allBooks;
                     });
                 })
-                .error(function(data) { alert('error') })
-                .complete(function(data) {$('.table').slideDown();});
+                .success(function(data) {$('.table').slideDown();})
+                .error(function(data) { alert('error') });
             }
             else{
                 docNumber = item.docNumber || '1';
@@ -103,8 +116,8 @@ function CatalogCtrl($scope, $http, $templateCache) {
                         console.log($scope.details);
                     });
                 })
-                .error(function(data) { alert('error') })
-                .complete(function(data) {$('.table').slideDown();});
+                .success(function(data) {$('.table').slideDown();})
+                .error(function(data) { alert('error') });
             };
         };
         if ($scope.isOpen(item)){
@@ -112,11 +125,16 @@ function CatalogCtrl($scope, $http, $templateCache) {
         }else {
             $scope.opened = item;
         };
-
     };
 
     $scope.isOpen = function(item){
         return $scope.opened === item;
+    };
+
+    $scope.needsAnotherPage = function(){
+        if ($scope.queryType == 'All Fields'){
+            return $scope.dataOnPage === 20;
+        }else{return $scope.dataOnPage === 10;};
     };
 };
 

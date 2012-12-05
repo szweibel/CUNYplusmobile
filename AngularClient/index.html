@@ -39,9 +39,9 @@
       <div>&nbsp;</div>
     <input id='q' type="text" ng-model="query" class='search-query input-block-level' style='margin-bottom: 10px;' placeholder="Search"/>
     <select class='input-block-level' id='search_type' ng-model='queryType' ng-options="item.value as item.label for item in choices"></select>
-    <button class='m-btn purple btn-block' id='search'  ng-click="fetch()">search</button>
+    <button class='m-btn purple btn-block' id='search'  ng-click="fetch('new')">search</button>
     </div>
-    <div class='row-fluid' animate="down">
+    <div class='row-fluid'>
     <p>search: {{query}}</p>
     <p>{{results}}</p>
       <ul class='unstyled'>
@@ -108,8 +108,9 @@
         </div>
         </div>
         </li>
-		  </ul>
-		</div>
+      </ul>
+    </div>
+    <button ng-show='needsAnotherPage()' ng-click=fetch('next')>Next</button>
   </div>
 </body>
 </html>
