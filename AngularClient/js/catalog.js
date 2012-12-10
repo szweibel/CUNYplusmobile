@@ -48,6 +48,7 @@ function CatalogCtrl($scope, $http, $templateCache) {
     , { "value": "SHL", "label": "Call Number" }, { "value": "SUL", "label": "Subject" }];
 
     $scope.fetch = function(whichEvent) {
+        $scope.dataOnPage = 0;
         if (whichEvent == 'new'){ $scope.page = 1; $scope.nextScanPage = ''; }else{ $scope.page = $scope.page + 1; };
         console.log($scope.page);
         $scope.listType = $scope.queryType;
@@ -87,6 +88,7 @@ function CatalogCtrl($scope, $http, $templateCache) {
 
 
     $scope.goRecord = function(item) {
+        $scope.dataOnPage = 0;
         $scope.listType = 'All Fields';
         $('.table').hide();
         if (!$scope.isOpen(item)){
@@ -113,7 +115,6 @@ function CatalogCtrl($scope, $http, $templateCache) {
                 $.getJSON(APILocation + "/details",{'docNumber': docNumber, 'library': 'none' },function(new_data) {
                     $scope.$apply(function(){
                         $scope.details = new_data;
-                        console.log($scope.details);
                     });
                 })
                 .success(function(data) {$('.table').slideDown();})
