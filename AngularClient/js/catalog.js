@@ -34,6 +34,7 @@ function CatalogCtrl($scope, $http, $templateCache) {
     $scope.theCookie = '';
     $scope.nextScanPage = '';
     $scope.listType = '';
+    $scope.whichLibrary = 'HUNTER';
     $scope.dataOnPage = 0;
     $scope.marcRecord = 'data';
     $scope.schools = [{'value':'BARUCH', 'label':'Baruch College'}, {'value':'BOROUGH', 'label':'BMCC'}, {'value':'BRONX', 'label':'Bronx CC'},
@@ -50,10 +51,9 @@ function CatalogCtrl($scope, $http, $templateCache) {
     $scope.fetch = function(whichEvent) {
         $scope.dataOnPage = 0;
         if (whichEvent == 'new'){ $scope.page = 1; $scope.nextScanPage = ''; }else{ $scope.page = $scope.page + 1; };
-        console.log($scope.page);
         $scope.listType = $scope.queryType;
         var jqxhr = $.getJSON(APILocation + "/search", {'query':$scope.query, 'queryType':$scope.queryType, 'page': $scope.page,
-            alephCookie: $scope.theCookie, 'scanStart': $scope.nextScanPage},function(data) {})
+            alephCookie: $scope.theCookie, 'scanStart': $scope.nextScanPage, 'school': $scope.whichLibrary},function(data) {})
         .success(function(data) {
             $scope.$apply(function(){
             $scope.theCookie = data.alephCookie;

@@ -39,6 +39,8 @@
       <div>&nbsp;</div>
     <input id='q' type="text" ng-model="query" class='search-query input-block-level' style='margin-bottom: 10px;' placeholder="Search"/>
     <select class='input-block-level' id='search_type' ng-model='queryType' ng-options="item.value as item.label for item in choices"></select>
+    <p></p>
+    <select class='input-block-level' id='library' ng-model='whichLibrary' ng-options="item.value as item.label for item in schools"></select>
     <button class='m-btn purple btn-block' id='search'  ng-click="fetch('new')">search</button>
     </div>
     <div class='row-fluid'>
