@@ -76,7 +76,7 @@ function CatalogCtrl($scope, $http, $templateCache) {
     };
 
     $scope.marc = function(item) {
-        console.log('hey');
+        $scope.detailedItem = item;
         var jqxhr = $.getJSON(APILocation + "/marc", {'setNumber':item.setNumber, 'setEntry':item.setEntry,
             alephCookie: $scope.theCookie},function(data) {
         $scope.$apply(function(){
