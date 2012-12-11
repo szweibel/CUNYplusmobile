@@ -34,7 +34,7 @@ app.get('/search', function (req, res) {
     var scanStart = req.query["scanStart"]; //where the next page should start
     var alephCookie = req.query["alephCookie"];
     var uriBase = 'http://apps.appl.cuny.edu:83/F/';
-    var whichLibrary = req.query["CUNYSchool"];
+    var whichLibrary = req.query["school"];
 
     console.log(req.searchQuery)
     if (searchType == 'All Fields' || accessCode){
