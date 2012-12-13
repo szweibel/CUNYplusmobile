@@ -84,16 +84,6 @@ app.get('/search', function (req, res) {
                     var author = $(item).children('td')[3];
 
                     var title = $(item).children('td')[4];
-                    // var scripts = $(title).find('script').text();
-                    // var findStart = scripts.search('=');
-                    // var findEnd = scripts.search('>');
-                    // var marcLinkBuild = scripts.substring(findStart, (findEnd));
-                    // var marcLink = marcLinkBuild.slice(3);
-                    // var lastPlace = marcLink.search('=');
-                    // marcLink = marcLink.substring(lastPlace + 1);
-                    // var setNumber = getParameterByName('set_number', marcLink)
-                    // var setEntry = getParameterByName('set_entry', marcLink)
-
                     $($(title).children('script')).remove();
 
                     var year = $(item).children('td')[5];
@@ -120,8 +110,6 @@ app.get('/search', function (req, res) {
                         "year": $(year).text().trim(),
                         "resourceType": $(resourceType).text().trim(),
                         "library": $(holdingLibrary).text().trim(),
-                        // "setNumber": setNumber,
-                        // "setEntry": setEntry
                         };
                         if (image !== undefined)
                             allBooks[i].thumbnail = $(imageSrc).attr('src');
@@ -129,7 +117,6 @@ app.get('/search', function (req, res) {
                             var urlObj = url.parse(link, true);
                             allBooks[i].docNumber = urlObj.query['doc_number'];
                             allBooks[i].libraryCode = urlObj.query['sub_library'];
-                            allBooks[i].url = link;
                         };
                         whichLibrary == 'U-CUN01' ? allBooks[i].holdingLibraries = everyLibrary : allBooks[i].holdingLibraries = undefined;
 
@@ -182,6 +169,7 @@ app.get('/search', function (req, res) {
                     allChoices = new Array();
                     rows.each(function (i, item) {
                         var callNumber = $(item).children('td')[0];
+                        console.log($(callNumber).text());
                         var name = $(item).children('td')[1];
                         var link = $(name).find('a').attr('href');
                         allChoices[i] = {
@@ -192,11 +180,8 @@ app.get('/search', function (req, res) {
                                     var urlObj = url.parse(link, true);
                                     allChoices[i].docNumber = urlObj.query['doc_number'];
                                     allChoices[i].accessCode = urlObj.query['acc_sequence'];
-                                    allChoices[i].url = link;
                                 }
                     });
-                    // console.log(allChoices);
-
                 res.writeHead(200, {
                     'Content-Type': 'text/plain',
                     'Access-Control-Allow-Origin' : '*'
@@ -214,11 +199,12 @@ app.get('/search', function (req, res) {
 
 app.get('/marc', function (req, res){
     var docNumber = req.query["docNumber"];
+    var verbose = req.query["verbose"];
     var uriBase = 'http://apps.appl.cuny.edu:83/F/';
-
+    verbose == '1' ? format = '001' : format = '002'
 
     var options = {
-        uri: uriBase + '?func=direct&doc_number=' + docNumber + '&format=002'
+        uri: uriBase + '?func=direct&doc_number=' + docNumber + '&format=' + format
     };
     request(options, function(error, response, body) {
     //  debugger;
@@ -250,7 +236,6 @@ app.get('/marc', function (req, res){
                 var marcValue = $(item).children('td')[1];
                 var name = $(marcLabel).text().trim();
                 var value = $(marcValue).text().trim();
-
                 wholeMarc[name] = value;
             });
             // allRecords.shift();
@@ -258,7 +243,7 @@ app.get('/marc', function (req, res){
                 'Content-Type': 'text/plain',
                 'Access-Control-Allow-Origin' : '*'
             });
-            console.log(wholeMarc);
+            // console.log(wholeMarc);
             res.end(JSON.stringify(wholeMarc));
         });
     });
@@ -267,15 +252,8 @@ app.get('/marc', function (req, res){
 app.get('/details', function (req, res) {
     var docNumber = req.query["docNumber"];
     var library = req.query["library"];
-    if (library == 'none'){
-        var options = {
-        uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber,
-        };
-    }
-    else {
-        var options = {
-            uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber + '&year=&volume=&sub_library=' + library,
-        };
+    var options = {
+        uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber + '&year=&volume=&sub_library=' + library,
     };
     request(options, function(error, response, body) {
     //  debugger;
@@ -311,7 +289,7 @@ app.get('/details', function (req, res) {
                 var status = $(item).children('td')[5];
                 var dueDate = $(item).children('td')[6];
                 var dueHour = $(item).children('td')[7];
-                var requestUrl = 'http://apps.appl.cuny.edu:83/F/?func=title-request-form&bib_doc_number=' + docNumber;
+                // var requestUrl = 'http://apps.appl.cuny.edu:83/F/?func=title-request-form&bib_doc_number=' + docNumber;
 
 
                 allRecords[i] = {
@@ -323,7 +301,7 @@ app.get('/details', function (req, res) {
                     "status": $(status).html(),
                     "dueDate": $(dueDate).html(),
                     "dueHour": $(dueHour).html(),
-                    "requestUrl": requestUrl,
+                    // "requestUrl": requestUrl,
                     "docNumber": docNumber
                 }
 
