@@ -2,6 +2,7 @@ var catalog = {};
 var app = angular.module('catalog',['ngResource']);
 
 var APILocation = 'http://mighty-wildwood-7308.herokuapp.com';
+
 jQuery(document).ready(function($) {
     $.blockUI.defaults.css = {
         padding:        0,
@@ -26,17 +27,9 @@ jQuery(document).ready(function($) {
 
 
 function CatalogCtrl($scope, $http, $templateCache) {
-    $scope.APILocation = APILocation;
-    $scope.query = null;
     $scope.queryType = 'All Fields';
-    $scope.results = '';
     $scope.page = 1;
-    $scope.theCookie = '';
-    $scope.nextScanPage = '';
-    $scope.listType = '';
     $scope.whichLibrary = 'HUNTER';
-    $scope.dataOnPage = 0;
-    $scope.marcRecord = 'data';
     $scope.schools = [{'value':'BARUCH', 'label':'Baruch College'}, {'value':'BOROUGH', 'label':'BMCC'}, {'value':'BRONX', 'label':'Bronx CC'},
         {'value':'BROOKLYN', 'label':'Brooklyn College'}, {'value':'CENTRO', 'label':'Centro at Hunter'},
         {'value':'CITY', 'label':'City College and DSI'}, {'value':'STATENISLAND', 'label':'College of Staten Island'},
@@ -46,7 +39,7 @@ function CatalogCtrl($scope, $http, $templateCache) {
         {'value':'LEHMAN', 'label':'Lehman College'}, {'value':'MEDGAR', 'label':'Medgar Evers College'}, {'value':'NYCITY', 'label':'NYCCT'},
         {'value':'QUEENS', 'label':'Queens College'}, {'value':'QUEENSBOROUGH', 'label':'Queensborough CC'}, {'value':'YORK', 'label':'York College'}]
     $scope.choices = [{ "value": "All Fields", "label": "All fields" }, { "value": "TTL", "label": "Title" }, { "value": "AUT", "label": "Author" }
-    , { "value": "SHL", "label": "Call Number" }, { "value": "SUL", "label": "Subject" }];
+    , { "value": "SHL", "label": "Call Number" }, { "value": "SUL", "label": "Subject" }, { "value": "ISBN", "label": "ISBN" }];
 
     $scope.fetch = function(whichEvent) {
         $scope.dataOnPage = 0;
@@ -62,7 +55,6 @@ function CatalogCtrl($scope, $http, $templateCache) {
                     $scope.data = data.allBooks;
                 }
                 else{
-                    // console.log(data.allBooks);
                     $scope.data = $scope.data.concat(data.allBooks);
                 };
                 $scope.dataOnPage = data.allBooks.length;
@@ -77,8 +69,7 @@ function CatalogCtrl($scope, $http, $templateCache) {
 
     $scope.marc = function(item) {
         $scope.detailedItem = item;
-        var jqxhr = $.getJSON(APILocation + "/marc", {'setNumber':item.setNumber, 'setEntry':item.setEntry,
-            alephCookie: $scope.theCookie},function(data) {
+        var jqxhr = $.getJSON(APILocation + "/marc", {'docNumber' : item.docNumber},function(data) {
         $scope.$apply(function(){
                 $scope.marcRecord = data;
             });
@@ -133,9 +124,7 @@ function CatalogCtrl($scope, $http, $templateCache) {
     };
 
     $scope.needsAnotherPage = function(){
-        if ($scope.queryType == 'All Fields'){
-            return $scope.dataOnPage === 20;
-        }else{return $scope.dataOnPage === 10;};
+        if ($scope.queryType == 'All Fields'){return $scope.dataOnPage === 20}else{return $scope.dataOnPage === 10};
     };
 };
 

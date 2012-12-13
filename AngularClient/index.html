@@ -37,11 +37,6 @@
   <body>
 	<div ng-controller="CatalogCtrl">
     <div class='container-fluid'>
-
-
-<!-- <button class="demo btn btn-primary btn-large" data-toggle="modal" href="#responsive">View Demo</button> -->
-
-
     <div class='page-header'>
       <img border="0" src="http://i.imgur.com/NXGeW.jpg" class='center' alt="Logo"/>
       <div>&nbsp;</div>
@@ -97,6 +92,13 @@
           </table>
           </div>
         </div>
+        <div ng-switch-when='ISBN'>
+          <div ng-click='goRecord(item)'>
+          <table>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>{{item.callNumber}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+          </table>
+          </div>
+        </div>
         <div ng-switch-when='SHL'>
           <div ng-click='goRecord(item)'>
           <table>
@@ -123,7 +125,7 @@
 
   </div>
 
-   <div id="responsive" class="modal hide fade" tabindex="-1">
+<div id="responsive" class="modal hide fade" tabindex="-1">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3>{{detailedItem.name || detailedItem.title || detailedItem.callNumber}}</h3>
@@ -131,14 +133,14 @@
   <div class="modal-body" >
     <div>
       <table ng-repeat='(aspect, value) in marcRecord' class='table table-striped table-condensed'>
-                  <tr><th>{{aspect}}</th><td ng-bind-html-unsafe='value'></td></tr>
+        <tr><th>{{aspect}}</th><td ng-bind-html-unsafe='value'></td></tr>
       </table>
     </div>
   </div>
   <div class="modal-footer">
     <button type="button" data-dismiss="modal" class="m-btn purple btn-block">Close</button>
   </div>
-</div>
+  </div>
 </div>
 </body>
 </html>
