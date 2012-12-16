@@ -117,6 +117,7 @@ app.get('/search', function (req, res) {
                             var urlObj = url.parse(link, true);
                             allBooks[i].docNumber = urlObj.query['doc_number'];
                             allBooks[i].libraryCode = urlObj.query['sub_library'];
+                            // allBooks[i].url = link;
                         };
                         whichLibrary == 'U-CUN01' ? allBooks[i].holdingLibraries = everyLibrary : allBooks[i].holdingLibraries = undefined;
 
@@ -180,6 +181,7 @@ app.get('/search', function (req, res) {
                                     var urlObj = url.parse(link, true);
                                     allChoices[i].docNumber = urlObj.query['doc_number'];
                                     allChoices[i].accessCode = urlObj.query['acc_sequence'];
+                                    // allChoices[i].url = link;
                                 }
                     });
                 res.writeHead(200, {
@@ -252,9 +254,15 @@ app.get('/marc', function (req, res){
 app.get('/details', function (req, res) {
     var docNumber = req.query["docNumber"];
     var library = req.query["library"];
-    var options = {
-        uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber + '&year=&volume=&sub_library=' + library,
-    };
+    if (library == 'none'){
+        var options = {
+        uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber,
+        };
+    }
+    else {
+        var options = {
+            uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber + '&year=&volume=&sub_library=' + library,
+        };
     request(options, function(error, response, body) {
     //  debugger;
         console.log(options.uri)
