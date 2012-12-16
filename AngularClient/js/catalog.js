@@ -38,6 +38,7 @@ function CatalogCtrl($scope, $http, $templateCache) {
         {'value':'KINGSBOROUGH', 'label':'Kingsborough CC'}, {'value':'LAGUARDIA', 'label':'LaGuardia CC'}, {'value':'LAW', 'label':'Law School'},
         {'value':'LEHMAN', 'label':'Lehman College'}, {'value':'MEDGAR', 'label':'Medgar Evers College'}, {'value':'NYCITY', 'label':'NYCCT'},
         {'value':'QUEENS', 'label':'Queens College'}, {'value':'QUEENSBOROUGH', 'label':'Queensborough CC'}, {'value':'YORK', 'label':'York College'}]
+
     $scope.choices = [{ "value": "All Fields", "label": "All fields" }, { "value": "TTL", "label": "Title" }, { "value": "AUT", "label": "Author" }
     , { "value": "SHL", "label": "Call Number" }, { "value": "SUL", "label": "Subject" }, { "value": "ISBN", "label": "ISBN" }];
 
