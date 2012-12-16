@@ -24,6 +24,22 @@
     margin: 5px;
     cursor:pointer;
     }​
+    .modal {
+position: fixed;
+top: 3%;
+right: 3%;
+left: 3%;
+bottom: 3%;
+width: auto;
+margin: 0;
+}
+.modal-body {
+height: 60%;
+max-height: 350px;
+padding: 15px;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+}
   	</style>
   	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
@@ -122,7 +138,7 @@
     </div>
     <button class='m-btn purple btn-block' ng-show='needsAnotherPage()' ng-click=fetch('next')>Next</button>
 
-     <div id="responsive" class="container-fluid modal hide fade" tabindex="-1">
+     <div id="responsive" class="modal hide fade" tabindex="-1">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3>{{detailedItem.name || detailedItem.title || detailedItem.callNumber}}</h3>
