@@ -263,6 +263,7 @@ app.get('/details', function (req, res) {
         var options = {
             uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber + '&year=&volume=&sub_library=' + library,
         };
+    };
     request(options, function(error, response, body) {
     //  debugger;
         console.log(options.uri)
