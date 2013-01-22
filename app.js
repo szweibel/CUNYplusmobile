@@ -35,14 +35,18 @@ app.get('/search', function (req, res) {
     var alephCookie = req.query["alephCookie"];
     var uriBase = 'http://apps.appl.cuny.edu:83/F/';
     var whichLibrary = req.query["school"];
+    var barcode = req.query["barcode"];
 
     console.log(req.searchQuery)
-    if (searchType == 'All Fields' || accessCode){
+    if (searchType == 'All Fields' || accessCode || barcode){
         if (accessCode){
-            func = '?func=find-acc&acc_sequence=' + accessCode + '&local_base=' + (whichLibrary || 'Hunter');
+            var func = '?func=find-acc&acc_sequence=' + accessCode + '&local_base=' + (whichLibrary || 'Hunter');
+        }
+        else if (barcode){
+            var func = '?func=find-c&ccl_term=BAR%3D' + barcode;
         }
         else{
-            func = '?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=' + (whichLibrary || 'Hunter');
+            var func = '?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=' + (whichLibrary || 'Hunter');
         };
         if (pagination > 1 && alephCookie){
             uriBase = uriBase + (alephCookie);
