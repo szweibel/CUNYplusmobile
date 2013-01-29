@@ -1,5 +1,5 @@
 The CUNY+ Catalog API is currently located at http://mighty-wildwood-7308.herokuapp.com/. It replicates the main functions of searching the catalog, providing results that can be used for creating new apps that take advantage of CUNY's holdings and metadata.
-
+For example: http://mighty-wildwood-7308.herokuapp.com/search?query=global+warming&queryType=All+Fields&school=HUNTER
 To do a search for 'global warming' in Hunter College:
 
 ## Basic Search
