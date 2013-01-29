@@ -2,7 +2,7 @@ The CUNY+ Catalog API is currently located at http://mighty-wildwood-7308.heroku
 
 To do a search for 'global warming' in Hunter College:
 
-<h2>Basic Search</h2>
+## Basic Search
 /search?query=global+warming&queryType=All+Fields&school=HUNTER
 
 To change the query type:
@@ -36,14 +36,14 @@ NYCITY: NYCCT
 QUEENS: Queens College
 QUEENSBOROUGH: Queensborough
 
-<h2>Barcodes</h2>
+## Barcodes
 Similarly you can search using a barcode number:
 /search?barcode=31407007890312
 
-<h2>MARC Records</h2>
+## MARC Records
 To get a MARC record, all that is required is a "document number", for instance:
 /marc?docNumber=007269583
 
-<h2>Holding Records</h2>
+## Holding Records
 To get a holding record from a specific library requires a document number and the library code, provided by using the '/search' API:
 /details?docNumber=007268706&library=HC001
