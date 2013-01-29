@@ -7,7 +7,19 @@ And for a demonstration of what can be done with it: http://74.72.113.174/CUNYpl
 To do a search for 'global warming' in Hunter College:
 /search?query=global+warming&queryType=All+Fields&school=HUNTER
 
-To change the query type:
+The API will return a list of items from the catalog:
+{
+      "title": "Advanced statistical methods for the analysis of large data-sets",
+      "author": "Di Ciaccio, Agostino.",
+      "year": "2012",
+      "resourceType": "Electronic Resource",
+      "library": "Hunter Main",
+      "thumbnail": "http://syndetics.com/index.aspx?isbn=9783642210372 (electronic bk.)/SC.GIF&client=cunyh&type=xw12",
+      "docNumber": "007268706",
+      "libraryCode": "HC001"
+}
+
+To change the query type, replace the value of 'queryType':
 
 All Fields: All fields
 TTL: Title
@@ -16,7 +28,7 @@ SHL: Call Number
 SUL: Subject
 ISBN: ISBN
 
-To choose which school's catalog to search, replace the value of 'school' with one of the following:
+To choose which school's catalog to search, replace the value of 'school':
 
 BOROUGH: BMCC
 BRONX: Bronx CC
