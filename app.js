@@ -136,7 +136,7 @@ app.get('/search', function (req, res) {
                     alephCookie: cookie,
                     allBooks: allBooks
                 }
-                res.end(JSON.stringify(finalJSON));
+                res.end(JSON.stringify(finalJSON, null, 2));
             });
         });
     }
@@ -197,7 +197,7 @@ app.get('/search', function (req, res) {
                     scanStart: nextScanStart,
                     allBooks: allChoices
                 }
-                res.end(JSON.stringify(finalJSON));
+                res.end(JSON.stringify(finalJSON, null, 2));
             });
         });
     };
@@ -250,7 +250,7 @@ app.get('/marc', function (req, res){
                 'Access-Control-Allow-Origin' : '*'
             });
             // console.log(wholeMarc);
-            res.end(JSON.stringify(wholeMarc));
+            res.end(JSON.stringify(wholeMarc, null, 2));
         });
     });
 });
@@ -347,7 +347,7 @@ app.get('/details', function (req, res) {
                 'Access-Control-Allow-Origin' : '*'
             });
             // console.log(allRecords);
-            res.end(JSON.stringify(allRecords));
+            res.end(JSON.stringify(allRecords, null, 2));
         });
     });
 });
