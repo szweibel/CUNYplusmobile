@@ -258,7 +258,7 @@ app.get('/marc', function (req, res){
 app.get('/details', function (req, res) {
     var docNumber = req.query["docNumber"];
     var library = req.query["library"];
-    if (library == 'none'){
+    if (library == 'none' || library==undefined){
         var options = {
         uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber,
         };
