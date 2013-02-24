@@ -1,0 +1,160 @@
+<!doctype html>
+<html ng-app>
+  <head>
+    <link href="css/angular-ui.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="css/m-styles.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> <!--320-->
+  	<style type="text/css">
+    .m-icon-big-swapdown{margin-top: 43px;}
+    img.center {display: block;   margin-left: auto;   margin-right: auto; }
+    img.thumbnail{min-height:100px; min-width: 70px; max-height:100px; max-width: 70px;
+      background-image: url("img/00000046006A46006A_55.png")}
+ 	  li { border-style:solid; border-top:thin #9966CC; border-left:none; border-right:none; color: #46006A;}
+    li > div > table{color:black;}
+    .book th{ min-width: 70px; }
+  	.table-condensed td{ text-align: right;}
+  	.book { font-size: 14px; font-weight: bold; display: inline; margin: .6em 0; text-overflow: visible; word-wrap: break-word; overflow: visible; white-space: normal; color:black; text-decoration: none; }
+    .box {
+    position: relative;
+    background-color: #abc;
+    width: 40px;
+    height: 40px;
+    float: left;
+    margin: 5px;
+    cursor:pointer;
+    }​
+    .modal {
+position: fixed;
+top: 3%;
+right: 3%;
+left: 3%;
+bottom: 3%;
+width: auto;
+margin: 0;
+}
+.modal-body {
+height: 60%;
+max-height: 350px;
+padding: 15px;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+}
+  	</style>
+  	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+    <script src="js/angular-ui.min.js"></script>
+    <script src="js/catalog.js"></script>
+    <script src="js/jquery.blockUI.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </head>
+  <body>
+	<div ng-controller="CatalogCtrl">
+    <div class='container-fluid'>
+    <div class='page-header'>
+      <img border="0" src="http://i.imgur.com/NXGeW.jpg" class='center' alt="Logo"/>
+      <div>&nbsp;</div>
+    <input id='q' type="text" ng-model="query" class='search-query input-block-level' style='margin-bottom: 10px;' placeholder="Search"/>
+    <select class='input-block-level' id='search_type' ng-model='queryType' ng-options="item.value as item.label for item in choices"></select>
+    <p></p>
+    <select class='input-block-level' id='library' ng-model='whichLibrary' ng-options="item.value as item.label for item in schools"></select>
+    <button class='m-btn purple btn-block' id='search'  ng-click="fetch('new')">search</button>
+    </div>
+    <div class='row-fluid'>
+    <p>search: {{query}}</p>
+    <p>{{results}}</p>
+      <ul class='unstyled'>
+      	<li ng-repeat='item in data'>
+          <div ng-switch on='listType'>
+        	<div ng-switch-when='All Fields'>
+            <div ng-click='goRecord(item)'>
+            <table>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name || item.title || item.callNumber}}</a><br/>{{item.author || item.callNumber}}<br/>{{item.year}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+            </table>
+            </div>
+          <div ng-repeat='copy in details' ng-show="isOpen(item)">
+              <p>Copy {{($index + 1)}}</p>
+            <table class='table table-striped table-condensed'>
+              <tr><th>Call Number</th><td ng-bind-html-unsafe='copy.callNumber'></td></tr>
+                <tr><th>Library</th><td>{{copy.library}}</td></tr>
+                <tr><th>Location</th><td ng-bind-html-unsafe='copy.location'></td></tr>
+                <tr><th>Status</th><td>{{copy.status}}</td></tr>
+                <tr><th>Description</th><td ng-bind-html-unsafe='copy.description'></td></tr>
+                <tr><th>Due Date</th><td ng-bind-html-unsafe='copy.dueDate'></td></tr>
+            </table>
+            <button class='m-btn purple btn-block' data-toggle="modal" href="#responsive" ng-click='marc(item)'>Details</button>
+          </div>
+        </div>
+         <div ng-switch-when='TTL'>
+          <div ng-click='goRecord(item)'>
+          <table>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>results: {{item.callNumber}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+          </table>
+          </div>
+        </div>
+        <div ng-switch-when='SUL'>
+          <div ng-click='goRecord(item)'>
+          <table>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>results:{{item.callNumber}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+          </table>
+          </div>
+        </div>
+        <div ng-switch-when='AUT'>
+          <div ng-click='goRecord(item)'>
+          <table>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>results:{{item.callNumber}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+          </table>
+          </div>
+        </div>
+        <div ng-switch-when='ISBN'>
+          <div ng-click='goRecord(item)'>
+          <table>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.name}}</a><br/>{{item.callNumber}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+          </table>
+          </div>
+        </div>
+        <div ng-switch-when='SHL'>
+          <div ng-click='goRecord(item)'>
+          <table>
+              <tr><th><img class='thumbnail' ng-src='{{item.thumbnail || null}}' /></th><td><a class='book'>{{item.callNumber}}</a><br/>{{item.name}}</td><i class="m-icon-big-swapdown pull-right"></i></tr>
+          </table>
+          </div>
+            <div ng-repeat='copy in details' ng-show="isOpen(item)">
+                <p>Copy {{($index + 1)}}</p>
+              <table class='table table-striped table-condensed'>
+                <tr><th>Call Number</th><td ng-bind-html-unsafe='copy.callNumber'></td></tr>
+                  <tr><th>Library</th><td>{{copy.library}}</td></tr>
+                  <tr><th>Location</th><td ng-bind-html-unsafe='copy.location'></td></tr>
+                  <tr><th>Status</th><td>{{copy.status}}</td></tr>
+                  <tr><th>Description</th><td ng-bind-html-unsafe='copy.description'></td></tr>
+                  <tr><th>Due Date</th><td ng-bind-html-unsafe='copy.dueDate'></td></tr>
+              </table>
+            </div>
+        </div>
+        </div>
+        </li>
+      </ul>
+    </div>
+    <button class='m-btn purple btn-block' ng-show='needsAnotherPage()' ng-click=fetch('next')>Next</button>
+
+     <div id="responsive" class="modal hide fade" tabindex="-1">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3>{{detailedItem.name || detailedItem.title || detailedItem.callNumber}}</h3>
+        <button type="button" data-dismiss="modal" class="m-btn purple btn-block">Close</button>
+      </div>
+      <div class="modal-body" >
+        <div>
+          <table ng-repeat='(aspect, value) in marcRecord' class='table table-striped table-condensed'>
+            <tr><th>{{aspect}}</th><td ng-bind-html-unsafe='value'></td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
