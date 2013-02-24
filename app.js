@@ -16,7 +16,7 @@ function getParameterByName(name, url)
   var regexS = "[\\?&]" + name + "=([^&#]*)";
   var regex = new RegExp(regexS);
   var results = regex.exec(url);
-  if(results == null)
+  if(results === null)
     return "";
   else
     return decodeURIComponent(results[1].replace(/\+/g, " "));
@@ -37,21 +37,21 @@ app.get('/search', function (req, res) {
     var whichLibrary = req.query["school"];
     var barcode = req.query["barcode"];
 
-    console.log(req.searchQuery)
+    console.log(req.searchQuery);
     if (searchType == 'All Fields' || accessCode || barcode){
         if (accessCode){
             var func = '?func=find-acc&acc_sequence=' + accessCode + '&local_base=' + (whichLibrary || 'Hunter');
         }
         else if (barcode){
-            var func = '?func=find-c&ccl_term=BAR%3D' + barcode;
+            func = '?func=find-c&ccl_term=BAR%3D' + barcode;
         }
         else{
-            var func = '?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=' + (whichLibrary || 'Hunter');
+            func = '?func=find-e&adjacent=N&find_scan_code=FIND_WRD&request=' + searchQuery.replace(' ', '+') + '&Search=+Search+&local_base=' + (whichLibrary || 'Hunter');
         };
         if (pagination > 1 && alephCookie){
             uriBase = uriBase + (alephCookie);
             var page = 1 + (20 * (pagination - 1 ));
-            var func = '?func=short-jump&jump=' + page;
+            func = '?func=short-jump&jump=' + page;
         }
         var options = {uri: uriBase + func};
         request(options, function(error, response, body) {
@@ -76,13 +76,13 @@ app.get('/search', function (req, res) {
                 var resultsTable = $('table')[4];
                 var rows = $(resultsTable).children('tr');
 
-                allBooks = new Array();
+                allBooks = [];
 
                 rows.each(function (i, item) {
                     var image = $(item).children('td')[2];
                     $($(image).children('script')).remove();
                     //Get rid of follow-on requests
-                    var imageSrc = $(image).find('img')
+                    var imageSrc = $(image).find('img');
                     if ($(imageSrc).attr('src') == 'src') $(imageSrc).removeAttr('src');
 
                     var author = $(item).children('td')[3];
@@ -95,14 +95,14 @@ app.get('/search', function (req, res) {
 
                     var holdingsAndLink = $(item).children('td')[7];
                     var holdingLibrary = $(holdingsAndLink).find('a');
-                    var everyLibrary = []
+                    var everyLibrary = [];
                     holdingLibrary.each(function (i, item) { //Getting all the different sublibraries that have an item
                         var newLink =  $(item).attr('href');
                         var holdUrlObj = url.parse(newLink, true);
                         var subLibrary = {
                             libraryCode : holdUrlObj.query['sub_library'],
-                            docNumber : holdUrlObj.query['doc_number'],
-                        }
+                            docNumber : holdUrlObj.query['doc_number']
+                        };
                         everyLibrary.push(subLibrary);
                     });
                     var link = $(holdingLibrary).attr('href');
@@ -113,11 +113,11 @@ app.get('/search', function (req, res) {
                         "author": $(author).text().trim(),
                         "year": $(year).text().trim(),
                         "resourceType": $(resourceType).text().trim(),
-                        "library": $(holdingLibrary).text().trim(),
+                        "library": $(holdingLibrary).text().trim()
                         };
                         if (image !== undefined)
                             allBooks[i].thumbnail = $(imageSrc).attr('src');
-                        if (whichLibrary != 'U-CUN01' && link != undefined){
+                        if (whichLibrary != 'U-CUN01' && link !== undefined){
                             var urlObj = url.parse(link, true);
                             allBooks[i].docNumber = urlObj.query['doc_number'];
                             allBooks[i].libraryCode = urlObj.query['sub_library'];
@@ -135,7 +135,7 @@ app.get('/search', function (req, res) {
                 finalJSON = {
                     alephCookie: cookie,
                     allBooks: allBooks
-                }
+                };
                 res.end(JSON.stringify(finalJSON, null, 2));
             });
         });
@@ -150,7 +150,7 @@ app.get('/search', function (req, res) {
 
             request(options, function(error, response, body) {
             //  debugger;
-                console.log(options.uri)
+                console.log(options.uri);
                 if (error && response.statusCode !== 200) {
                     console.log(error);
                 }
@@ -167,11 +167,11 @@ app.get('/search', function (req, res) {
                     var mine = $(cookieTable).find('a')[1];
                     var theUrl = $(mine).attr('href');
                     // Getting the number for the next page
-                    var nextScanStart = getParameterByName('scan_start', theUrl)
+                    var nextScanStart = getParameterByName('scan_start', theUrl);
 
                     var resultsTable = $('table')[3];
                     var rows = $(resultsTable).children('tr');
-                    allChoices = new Array();
+                    allChoices = [];
                     rows.each(function (i, item) {
                         var callNumber = $(item).children('td')[0];
                         console.log($(callNumber).text());
@@ -179,9 +179,9 @@ app.get('/search', function (req, res) {
                         var link = $(name).find('a').attr('href');
                         allChoices[i] = {
                             callNumber: $(callNumber).text().trim(),
-                            name: $(name).text().trim(),
-                        }
-                        if (link != undefined){
+                            name: $(name).text().trim()
+                        };
+                        if (link !== undefined){
                                     var urlObj = url.parse(link, true);
                                     allChoices[i].docNumber = urlObj.query['doc_number'];
                                     allChoices[i].accessCode = urlObj.query['acc_sequence'];
@@ -196,12 +196,12 @@ app.get('/search', function (req, res) {
                 finalJSON = {
                     scanStart: nextScanStart,
                     allBooks: allChoices
-                }
+                };
                 res.end(JSON.stringify(finalJSON, null, 2));
             });
         });
-    };
-})
+    }
+});
 
 app.get('/marc', function (req, res){
     var docNumber = req.query["docNumber"];
@@ -214,7 +214,7 @@ app.get('/marc', function (req, res){
     };
     request(options, function(error, response, body) {
     //  debugger;
-        console.log(options.uri)
+        console.log(options.uri);
         if (error && response.statusCode !== 200) {
             console.log(error);
         }
@@ -258,19 +258,19 @@ app.get('/marc', function (req, res){
 app.get('/details', function (req, res) {
     var docNumber = req.query["docNumber"];
     var library = req.query["library"];
-    if (library == 'none' || library==undefined){
+    if (library == 'none' || library===undefined){
         var options = {
-        uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber,
+        uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber
         };
     }
     else {
         var options = {
-            uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber + '&year=&volume=&sub_library=' + library,
+            uri: 'http://apps.appl.cuny.edu:83/F/?func=item-global&doc_library=CUN01&doc_number=' + docNumber + '&year=&volume=&sub_library=' + library
         };
     };
     request(options, function(error, response, body) {
     //  debugger;
-        console.log(options.uri)
+        console.log(options.uri);
         if (error && response.statusCode !== 200) {
             console.log(error);
         }
@@ -287,7 +287,7 @@ app.get('/details', function (req, res) {
                 $(el).removeAttr('src');
             });
 
-            var allRecords = new Array();
+            var allRecords = [];
 
             var resultsTable = $('table')[7];
             var citation = $('table')[2];
@@ -316,7 +316,7 @@ app.get('/details', function (req, res) {
                     "dueHour": $(dueHour).html(),
                     // "requestUrl": requestUrl,
                     "docNumber": docNumber
-                }
+                };
 
                 if (allRecords[i].location){
                     if (allRecords[i].location == 'WEB Resource' || allRecords[i].location.indexOf("WEB") != -1 ){
@@ -333,9 +333,9 @@ app.get('/details', function (req, res) {
                                     href = $(nextTd).find('a').attr('href');
                                 }
                                 var start = 'javascript.open_window('.length;
-                                var linky = href.substring(start, href.length - 2)
-                                var composed = '<a href='+ linky +'>Access online</a>'
-                                allRecords[i].location = composed
+                                var linky = href.substring(start, href.length - 2);
+                                var composed = '<a href='+ linky +'>Access online</a>';
+                                allRecords[i].location = composed;
                             };
                         });
                     };
@@ -401,7 +401,7 @@ app.get('/hours', function (req, res) {
     });
 });
 
-var port = process.env.PORT || 3002
+var port = process.env.PORT || 3002;
 app.listen(port, '0.0.0.0');
 
 console.log('Server running at http://127.0.0.1:' + (port || '3002'));
